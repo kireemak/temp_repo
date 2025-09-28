@@ -1,0 +1,26 @@
+services:
+  my-flask-app:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - otel-collector
+    environment:
+      - OTLP_TRACES_ENDPOINT=http://otel-collector:4318/v1/traces
+      - OTLP_METRICS_ENDPOINT=http://otel-collector:4318/v1/metrics
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4318:4318"  # OTLP HTTP receiver
+      - "8889:8889"  # Prometheus exporter
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"

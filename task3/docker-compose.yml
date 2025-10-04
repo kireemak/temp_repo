@@ -22,6 +22,16 @@ services:
       - "8889:8889"
     networks:
       - monitoring
+    depends_on:
+      - jaeger
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    networks:
+      - monitoring
 
   prometheus:
     image: prom/prometheus:latest

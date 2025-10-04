@@ -13,7 +13,7 @@ services:
       - monitoring
 
   otel-collector:
-    image: otel/opentelemetry-collector:0.85.0
+    image: otel/opentelemetry-collector-contrib:0.85.0
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
       - ./otel-collector-config.yml:/etc/otel-collector-config.yml
@@ -44,7 +44,7 @@ services:
 
   loki:
     image: grafana/loki:2.9.0
-    command: -config.file=/etc/loki/local-config.yaml
+    command: ["-config.file=/etc/loki/local-config.yaml"]
     volumes:
       - ./loki-config.yml:/etc/loki/local-config.yaml
       - ./loki-data:/tmp/loki
@@ -55,7 +55,7 @@ services:
 
   promtail:
     image: grafana/promtail:2.9.0
-    command: -config.file=/etc/promtail/config.yml
+    command: ["-config.file=/etc/promtail/config.yml"]
     volumes:
       - ./promtail-config.yml:/etc/promtail/config.yml
       - /var/lib/docker/containers:/var/lib/docker/containers:ro

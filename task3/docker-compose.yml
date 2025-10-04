@@ -1,13 +1,16 @@
+version: '3.8'
+
+networks:
+  monitoring:
+    driver: bridge
+
 services:
   my-flask-app:
     build: .
     ports:
       - "5000:5000"
-    depends_on:
-      - otel-collector
-    environment:
-      - OTLP_TRACES_ENDPOINT=http://otel-collector:4318/v1/traces
-      - OTLP_METRICS_ENDPOINT=http://otel-collector:4318/v1/metrics
+    networks:
+      - monitoring
 
   otel-collector:
     image: otel/opentelemetry-collector:0.85.0
@@ -17,6 +20,8 @@ services:
     ports:
       - "4318:4318"
       - "8889:8889"
+    networks:
+      - monitoring
 
   prometheus:
     image: prom/prometheus:latest
@@ -24,24 +29,28 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    networks:
+      - monitoring
 
   loki:
     image: grafana/loki:2.9.0
-    command:
-      - "-config.file=/etc/loki/local-config.yaml"
+    command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./loki-config.yml:/etc/loki/local-config.yaml
       - ./loki-data:/tmp/loki
     ports:
       - "3100:3100"
-    user: "10001"
+    networks:
+      - monitoring
 
   promtail:
     image: grafana/promtail:2.9.0
     command: -config.file=/etc/promtail/config.yml
     volumes:
       - ./promtail-config.yml:/etc/promtail/config.yml
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    networks:
+      - monitoring
 
   grafana:
     image: grafana/grafana:latest
@@ -52,3 +61,5 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring

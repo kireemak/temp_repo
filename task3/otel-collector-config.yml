@@ -9,6 +9,9 @@ exporters:
     endpoint: "jaeger:4318"
     tls:
       insecure: true
+    protocols:
+      http:
+        endpoint: "jaeger:4318"
   prometheus:
     endpoint: "0.0.0.0:8889"
   logging:

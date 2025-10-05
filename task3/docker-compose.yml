@@ -41,6 +41,7 @@ services:
 
   loki:
     image: grafana/loki:2.9.0
+    user: "${UID}:${GID}"
     command: ["-config.file=/etc/loki/local-config.yaml"]
     volumes:
       - ./loki-config.yml:/etc/loki/local-config.yaml

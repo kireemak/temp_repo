@@ -1,3 +1,11 @@
-.gitignore
-/build
 .git
+.gitignore
+
+.dockerignore
+docker-compose.yml
+Dockerfile
+
+venv/
+.venv/
+
+loki-data/
